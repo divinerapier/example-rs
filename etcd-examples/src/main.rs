@@ -3,6 +3,8 @@ use etcd::Client;
 use futures::Future;
 use tokio::runtime::Runtime;
 
+mod client;
+
 fn main() {
     // Create a client to access a single cluster member. Addresses of multiple cluster
     // members can be provided and the client will try each one in sequence until it
