@@ -6,6 +6,12 @@ use tokio::runtime::Runtime;
 mod client;
 
 fn main() {
+    // foo();
+    // bar();
+    bar2();
+}
+
+fn foo() {
     // Create a client to access a single cluster member. Addresses of multiple cluster
     // members can be provided and the client will try each one in sequence until it
     // receives a successful response.
@@ -64,4 +70,85 @@ fn main() {
     let res = Runtime::new().unwrap().block_on(res);
     assert!(res.is_ok());
     println!("{:?}", res.unwrap());
+}
+
+fn bar() {
+    let mut conn = client::Client::new(&["http://localhost:2379"], None).unwrap();
+    let result = conn.create("/app", "value", None);
+    if let Err(e) = result {
+        if !e.exists_key() {
+            println!("create /app error: {:?}", e);
+            return;
+        }
+    }
+
+    let result = conn.create("/app", "value", None);
+    if let Err(e) = result {
+        if !e.exists_key() {
+            println!("create /app error: {:?}", e);
+            return;
+        }
+    }
+
+    println!("delete");
+
+    let result = conn.delete("/app", false);
+    if let Err(e) = result {
+        if !e.exists_key() {
+            println!("delete /app error: {:?}", e);
+            return;
+        }
+    }
+
+    let result = conn.create_dir("/app", None);
+    if let Err(e) = result {
+        if !e.exists_key() {
+            println!("create dir /app error: {:?}", e);
+            return;
+        }
+    }
+
+    let result = conn.create_dir("/app", None);
+    if let Err(e) = result {
+        if !e.exists_key() {
+            println!("create dir /app error: {:?}", e);
+            return;
+        }
+    }
+}
+
+fn bar2() {
+    let mut conn = client::Client::new(&["http://localhost:2379"], None).unwrap();
+
+    println!("delete /app. {:?}", conn.delete("/app", false));
+
+    println!("force delete /app. {:?}", conn.delete("/app", true));
+
+    let result = conn.create("/app", "value", None);
+    if let Err(e) = result {
+        if !e.exists_key() {
+            println!("create /app error: {:?}", e);
+            return;
+        }
+    }
+
+    let result = conn.create("/app/1", "1", None);
+    if let Err(e) = result {
+        if !e.exists_key() {
+            println!("create /app error: {:?}", e);
+            return;
+        }
+    }
+
+    println!(
+        "set /app = 'hello world'. {:?}",
+        conn.set("/app", "hello world", None)
+    );
+
+    println!("list /app");
+    let result = conn.list_dir("/app");
+    println!("list dir. {:?}", result);
+
+    let result = conn.list_dir("/app/1");
+    println!("list dir. {:?}", result);
 }

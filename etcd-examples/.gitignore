@@ -1,2 +1,9 @@
 /target
 **/*.rs.bk
+
+# ide
+.idea
+.vscode
+
+# cache
+.DS_Store
