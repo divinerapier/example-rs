@@ -128,25 +128,21 @@ impl Client {
         .and_then(|response| {
             let response: etcd::Response<kv::KeyValueInfo> = response;
             let mut kv_pairs = vec![];
-            let nodes = response.data.node.nodes;
-            match nodes.as_ref() {
-                Some(nodes) => {
-                    for node in nodes {
-                        let node: &etcd::kv::Node = node;
-                        let mut dir = false;
-                        if let Some(is_dir) = node.dir {
-                            dir = is_dir;
-                        }
-                        if let Some(value) = &node.value {
-                            kv_pairs.push(KV {
-                                key: node.key.as_ref().unwrap().clone(),
-                                value: value.clone(),
-                                dir,
-                            });
-                        }
+            if let Some(nodes) = response.data.node.nodes {
+                for node in nodes {
+                    let node: etcd::kv::Node = node;
+                    let mut dir = false;
+                    if let Some(is_dir) = node.dir {
+                        dir = is_dir;
+                    }
+                    if let Some(value) = node.value {
+                        kv_pairs.push(KV {
+                            key: node.key.unwrap(),
+                            value: value,
+                            dir,
+                        });
                     }
                 }
-                None => {}
             }
             Ok(kv_pairs)
         });
