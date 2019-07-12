@@ -3,6 +3,7 @@ use etcd::{
     Response,
 };
 use futures::future::Future;
+use futures::future::FutureResult;
 use tokio::runtime::Runtime;
 
 #[derive(Debug)]
@@ -55,6 +56,7 @@ pub enum EtcdApiError {
 
 impl From<std::vec::Vec<etcd::Error>> for Error {
     fn from(ee: Vec<etcd::Error>) -> Self {
+        println!("vec<error>: {:?}", ee);
         let len = ee.len();
         for e in ee {
             return Error::from(e);
@@ -114,6 +116,32 @@ impl Client {
 }
 
 impl Client {
+    pub fn is_dir(&mut self, key: &str) -> bool {
+        let key = key.to_owned();
+        let client = self.c.clone();
+        let fu = kv::get(
+            &client,
+            &key,
+            GetOptions {
+                recursive: false,
+                sort: false,
+                strong_consistency: true,
+            },
+        )
+        .and_then(|response| {
+            let response: Response<KeyValueInfo> = response;
+            if let Some(is_dir) = response.data.node.dir {
+                return futures::future::ok(is_dir);
+            }
+            futures::future::ok(false)
+        })
+        .or_else(move |e| -> FutureResult<bool, etcd::Error> {
+            println!("Client::is_dir. key: {}, error: {:?}", key, e);
+            futures::future::ok(false)
+        });
+        self.runtime.block_on(fu).unwrap()
+    }
+
     pub fn list_dir(&mut self, key: &str) -> Result<Vec<KV>, Error> {
         let client = self.c.clone();
         let fu = kv::get(

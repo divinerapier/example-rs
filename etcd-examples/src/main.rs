@@ -8,7 +8,8 @@ mod client;
 fn main() {
     // foo();
     // bar();
-    bar2();
+    // bar2();
+    bar3();
 }
 
 fn foo() {
@@ -151,4 +152,13 @@ fn bar2() {
 
     let result = conn.list_dir("/app/1");
     println!("list dir. {:?}", result);
+}
+
+fn bar3() {
+    let mut conn = client::Client::new(&["http://localhost:2379"], None).unwrap();
+    println!("is_dir(\"/app\") = {}", conn.is_dir("/app"));
+    println!("is_dir(\"/app/1\") = {}", conn.is_dir("/app/1"));
+    println!("is_dir(\"/app/2\") = {}", conn.is_dir("/app/2"));
+    println!("is_dir(\"/app/3\") = {}", conn.is_dir("/app/3"));
+    println!("is_dir(\"/app/4\") = {}", conn.is_dir("/app/4"));
 }
