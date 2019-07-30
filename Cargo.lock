@@ -214,7 +214,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "futures-examples"
+name = "futures-stream-fibonacci"
 version = "0.1.0"
 dependencies = [
  "futures 0.1.28 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -222,7 +222,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "futures-examples2"
+name = "futures-stream-readfile"
 version = "0.1.0"
 dependencies = [
  "futures 0.1.28 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -708,6 +708,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "rand_core 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "readfile"
+version = "0.1.0"
 
 [[package]]
 name = "redox_syscall"

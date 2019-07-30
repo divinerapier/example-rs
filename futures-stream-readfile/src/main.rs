@@ -1,21 +1,26 @@
 use futures::{Async, Future, Poll, Stream};
+use tokio;
 
 use std::io::{Read, Write};
-use tokio;
+use std::path::Path;
+
 struct FileStream {
-    pub path: String,
+    batch_size: usize,
     pub file: std::fs::File,
     pub buffer: Vec<u8>,
     pub length: usize,
 }
 
 impl FileStream {
-    pub fn new(path: &str) -> std::io::Result<FileStream> {
+    pub fn new<P: AsRef<Path>>(path: P) -> std::io::Result<FileStream> {
+        let batch_size: usize = 409600;
         let file = std::fs::File::open(path)?;
+        let mut buffer = Vec::with_capacity(batch_size);
+        buffer.resize(batch_size, 0);
         Ok(FileStream {
-            path: path.to_owned(),
+            batch_size,
             file,
-            buffer: Vec::with_capacity(4096),
+            buffer,
             length: 0,
         })
     }
@@ -27,6 +32,7 @@ impl Stream for FileStream {
 
     fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
         self.buffer.clear();
+        self.buffer.resize(self.batch_size, 0);
         let size = self.file.read(&mut self.buffer)?;
         println!("read size: {}", size);
         if size == 0 {
@@ -64,26 +70,25 @@ where
     type Error = T::Error;
 
     fn poll(&mut self) -> Poll<(), Self::Error> {
-        let value = match futures::try_ready!(self.stream.poll()) {
-            Some(value) => value,
-            None => return Ok(Async::Ready(())),
-        };
-        let value: Vec<u8> = value;
-        self.length += value.len();
-        println!("read data: {}, already: {}", value.len(), self.length);
-        self.file.write(&value[0..value.len()]);
+        while let Some(value) = futures::try_ready!(self.stream.poll()) {
+            let value: Vec<u8> = value;
+            self.length += value.len();
+            println!("read data: {}, already: {}", value.len(), self.length);
+            self.file.write(&value[0..value.len()]).unwrap();
+        }
         Ok(Async::Ready(()))
     }
 }
 
 fn main() {
-    let mut file_stream = FileStream::new("/Users/fangsihao/Documents/code/rust/github.com/divinerapier/example-rs/futures-examples/src/test.txt").unwrap();
-    let mut output = std::fs::File::create("/Users/fangsihao/Documents/code/rust/github.com/divinerapier/example-rs/futures-examples/src/output.txt").unwrap();
-    // let fu = file_stream.and_then(move |data| {
-    //     println!("write size: {}", data.length);
-    //     output.write(&data.buffer[0..data.length])
-    // });
+    let current_dir = std::env::current_dir().unwrap();
+    let input_path = current_dir.join("input.txt");
+    let output_path = current_dir.join("output.txt");
+    println!("input: {:?}", input_path);
+    println!("output: {:?}", output_path);
+    let file_stream = FileStream::new(input_path).unwrap();
+    let output = std::fs::File::create(output_path).unwrap();
     let writer = FileWriter::new(output, file_stream);
-    // tokio::runtime::Runtime::block_on(writer);
-    tokio::run(writer);
+    let mut runtime = tokio::runtime::Runtime::new().unwrap();
+    runtime.block_on(writer).unwrap();
 }
