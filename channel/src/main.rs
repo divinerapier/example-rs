@@ -1,3 +1,4 @@
+use bytes::buf::IntoBuf;
 use std::sync::mpsc::{channel, Receiver, Sender};
 
 fn main() {
@@ -12,16 +13,18 @@ fn main() {
     handler1.join();
 }
 
-fn consumer(receiver: Receiver<Vec<u8>>) {
+fn consumer(receiver: Receiver<bytes::Bytes>) {
     for data in receiver.iter() {
+        let data = data.as_ref();
         println!("{:?}", data);
     }
     println!("consumer closed",);
 }
 
-fn producer(sender: Sender<Vec<u8>>) {
+fn producer(sender: Sender<bytes::Bytes>) {
     for i in 0..10 {
         let data = vec![0 + i * 3, 1 + i * 3, 2 + i * 3];
+        let data = bytes::Bytes::from(data);
         sender.send(data);
     }
     println!("producer closed",);
