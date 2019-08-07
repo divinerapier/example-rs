@@ -2,6 +2,10 @@ use bytes::buf::IntoBuf;
 use std::sync::mpsc::{channel, Receiver, Sender};
 
 fn main() {
+    bounded_channel();
+}
+
+fn close_channel() {
     let (sender, receiver) = channel();
     let handler = std::thread::spawn(move || {
         consumer(receiver);
@@ -28,4 +32,23 @@ fn producer(sender: Sender<bytes::Bytes>) {
         sender.send(data);
     }
     println!("producer closed",);
+}
+
+fn bounded_channel() {
+    let (sender, receiver) = std::sync::mpsc::sync_channel(10);
+    let mut handlers = vec![];
+    for i in 0..10 {
+        let sender = sender.clone();
+        let t = std::thread::spawn(move || {
+            for j in 0.. {
+                let data = format!("thread: {}. {}", i, j);
+                sender.send(data.clone());
+                println!("{}", data);
+            }
+        });
+        handlers.push(t);
+    }
+    for h in handlers {
+        h.join();
+    }
 }
