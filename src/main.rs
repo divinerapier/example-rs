@@ -23,4 +23,15 @@ impl A {
     }
 }
 
-fn main() {}
+
+
+fn main() {
+    use log::error;
+    use log::info;
+    use log::debug;
+    use log::trace;
+    error!("hello world");
+    info!("hello world");
+    debug!("hello world");
+    trace!("hello world");
+}
