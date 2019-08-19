@@ -1,6 +1,10 @@
+use std::io::Seek;
+use std::io::Write;
+
 fn main() {
     // f0()
-    bench_seek()
+    // bench_seek()
+    write_everywhere()
 }
 
 fn f0() {
@@ -49,4 +53,19 @@ fn bench_seek() {
         elapsed.as_micros(),
         elapsed.as_micros() as f64 / count as f64
     );
+}
+
+fn write_everywhere() {
+    let mut file = std::fs::OpenOptions::new()
+        .write(true)
+        .create(true)
+        .create_new(false)
+        .truncate(true)
+        .open("./write_everywhere.txt")
+        .unwrap();
+    for i in 0..9 {
+        file.write(format!("{:09}\n", i).as_bytes()).unwrap();
+    }
+    file.seek(std::io::SeekFrom::Start(0)).unwrap();
+    file.write(format!("{:09}\n", 10).as_bytes()).unwrap();
 }
