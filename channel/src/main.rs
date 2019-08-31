@@ -2,7 +2,8 @@ use bytes::buf::IntoBuf;
 use std::sync::mpsc::{channel, Receiver, Sender};
 
 fn main() {
-    bounded_channel();
+    // bounded_channel();
+    check_channel_is_closed();
 }
 
 fn close_channel() {
@@ -51,4 +52,20 @@ fn bounded_channel() {
     for h in handlers {
         h.join();
     }
+}
+
+fn check_channel_is_closed() {
+    let (sender, receiver) = std::sync::mpsc::channel();
+    let handler = std::thread::spawn(move || {
+        sender.send(1);
+        sender.send(2);
+        sender.send(3);
+    });
+    handler.join();
+    std::sync::mpsc::RecvError;
+    println!("{:?}", receiver.recv());
+    println!("{:?}", receiver.recv());
+    println!("{:?}", receiver.recv());
+    println!("{:?}", receiver.recv());
+    println!("{:?}", receiver.recv());
 }
