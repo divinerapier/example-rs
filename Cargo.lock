@@ -311,6 +311,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "ffi-c-array"
+version = "0.1.0"
+
+[[package]]
 name = "file"
 version = "0.1.0"
 dependencies = [

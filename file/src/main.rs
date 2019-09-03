@@ -4,7 +4,9 @@ use std::io::Write;
 fn main() {
     // f0()
     // bench_seek()
-    write_everywhere()
+    // write_everywhere()
+    // list_dir("/Users/fangsihao/Documents/code");
+    iter();
 }
 
 fn f0() {
@@ -68,4 +70,29 @@ fn write_everywhere() {
     }
     file.seek(std::io::SeekFrom::Start(0)).unwrap();
     file.write(format!("{:09}\n", 10).as_bytes()).unwrap();
+}
+
+fn list_dir(dir: &str) {
+    let file_list = std::fs::read_dir(dir).unwrap();
+    for entry in file_list {
+        let entry: std::fs::DirEntry = entry.unwrap();
+        println!("file name: {:?}", entry.file_name());
+    }
+}
+
+fn iter() {
+    let arr = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    let arr: Vec<i32> = arr
+        .into_iter()
+        .map(|x| {
+            let a = x * x;
+            println!("square: {}", a);
+            a
+        })
+        .map(|x| {
+            let a = x - 2;
+            println!("minus: {}", a);
+            a
+        })
+        .collect();
 }
