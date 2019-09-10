@@ -23,4 +23,5 @@ members = [
     "logger",
     "redis-examples",
     "ffi/c-array",
+    "misc",
 ]
