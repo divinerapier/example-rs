@@ -6,7 +6,8 @@ fn main() {
     // bench_seek()
     // write_everywhere()
     // list_dir("/Users/fangsihao/Documents/code");
-    iter();
+    // iter();
+    truncate();
 }
 
 fn f0() {
@@ -95,4 +96,20 @@ fn iter() {
             a
         })
         .collect();
+}
+
+fn truncate() {
+    let mut file = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .write(true)
+        .read(true)
+        .open("./test-seek.txt")
+        .unwrap();
+    file.seek(std::io::SeekFrom::Start(64 * 1024)).unwrap();
+    file.write_all("hello world!".as_bytes()).unwrap();
+    file.set_len(64 * 1024).unwrap();
+    file.sync_all();
+    file.seek(std::io::SeekFrom::Start(64 * 1024)).unwrap();
+    file.write_all("hello world!".as_bytes()).unwrap();
 }
