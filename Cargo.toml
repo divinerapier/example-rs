@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 log = "0.4.8"
+rose_tree = { git = "https://github.com/divinerapier/rose_tree-rs.git"}
 
 [workspace]
 members = [
@@ -25,4 +26,5 @@ members = [
     "ffi/c-array",
     "misc",
     "deref",
+    "rose-tree",
 ]
