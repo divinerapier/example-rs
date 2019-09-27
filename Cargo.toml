@@ -27,4 +27,5 @@ members = [
     "misc",
     "deref",
     "rose-tree",
+    "s3",
 ]
