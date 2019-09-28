@@ -9,6 +9,9 @@ use rusoto_s3::{CreateBucketRequest, GetObjectRequest, PutObjectRequest, S3Clien
 use srand;
 use std::env;
 use std::io::{self, Read};
+use std::path::{Path, PathBuf};
+use std::sync::mpsc::{channel, Receiver, Sender};
+use std::sync::Arc;
 
 /// Create client using given static access/secret keys
 pub fn new_s3client_with_credentials(
@@ -36,16 +39,17 @@ pub fn create_test_bucket() -> (S3Client, String) {
     )
     .unwrap();
 
-    let bucket_name = srand::ThreadLocal::uint64().to_string();
+    let bucket_name = String::from("5577006791947779410");
+    // let bucket_name = srand::ThreadLocal::uint64().to_string();
 
-    println!("bucket: {}", bucket_name);
-    client
-        .create_bucket(CreateBucketRequest {
-            bucket: bucket_name.clone(),
-            ..Default::default()
-        })
-        .sync()
-        .unwrap();
+    // println!("bucket: {}", bucket_name);
+    // client
+    //     .create_bucket(CreateBucketRequest {
+    //         bucket: bucket_name.clone(),
+    //         ..Default::default()
+    //     })
+    //     .sync()
+    //     .unwrap();
 
     (client, bucket_name)
 }
@@ -60,6 +64,57 @@ pub fn put_object(client: &S3Client, bucket: &str, key: &str, data: Vec<u8>) {
         })
         .sync()
         .unwrap();
+}
+
+// fn walkdir(root: &Path, tx: Sender<PathBuf>) {
+//     for entry in walkdir::WalkDir::new(root) {
+//         let entry: walkdir::DirEntry = entry.unwrap();
+//         let path: &Path = entry.path();
+//         if !path.is_dir() {
+//             tx.send(path.to_path_buf());
+//         } else {
+//             walkdir(path, tx.clone());
+//         }
+//     }
+// }
+
+fn recursive_upload(client: &S3Client, bucket: &str, root: &str) {
+    // let root: &Path = Path::new(root);
+    // let parent: &Path = root.parent().unwrap();
+    // let root_cloned = root.to_path_buf();
+    // let (tx, rx): (Sender<PathBuf>, Receiver<PathBuf>) = channel();
+    // let h = std::thread::spawn(move || {
+    //     walkdir(&root_cloned, tx);
+    // });
+    // for path in rx {
+    //     let data = std::fs::read(&path).unwrap();
+    //     let path: PathBuf = path;
+    //     // println!("upload {} to {}",path.);
+    //     put_object(
+    //         &client,
+    //         bucket,
+    //         path.strip_prefix(parent)
+    //             .as_ref()
+    //             .unwrap()
+    //             .to_str()
+    //             .unwrap(),
+    //         data,
+    //     );
+    // }
+    // h.join();
+    let root: &Path = Path::new(root);
+    let parent: &Path = root.parent().unwrap();
+    for entry in walkdir::WalkDir::new(root) {
+        let entry: walkdir::DirEntry = entry.unwrap();
+        let path: &Path = entry.path();
+        if path.is_dir() {
+            continue;
+        }
+        let key = path.strip_prefix(parent).unwrap();
+        println!("upload {:?} to {:?}", path, key);
+        let data = std::fs::read(path).unwrap();
+        put_object(client, bucket, key.to_str().unwrap(), data);
+    }
 }
 
 pub fn get_body(client: &S3Client, bucket: &str, key: &str) -> Vec<u8> {
@@ -101,6 +156,6 @@ impl Read for ReaderWithError {
 }
 
 fn main() {
-    let (client, _) = create_test_bucket();
-    println!("Hello, world!");
+    let (client, bucket_name) = create_test_bucket();
+    recursive_upload(&client, &bucket_name, env::var("UPLOAD_DIR"));
 }
