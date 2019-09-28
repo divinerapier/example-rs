@@ -2,37 +2,52 @@
 
 use futures::stream::Stream;
 use futures::Future;
+use rusoto_core::request::{HttpClient, TlsError};
 use rusoto_core::Region;
+use rusoto_credential::StaticProvider;
 use rusoto_s3::{CreateBucketRequest, GetObjectRequest, PutObjectRequest, S3Client, S3};
+use srand;
 use std::env;
 use std::io::{self, Read};
 
+/// Create client using given static access/secret keys
+pub fn new_s3client_with_credentials(
+    region: Region,
+    access_key: String,
+    secret_key: String,
+) -> Result<S3Client, TlsError> {
+    Ok(S3Client::new_with(
+        HttpClient::new()?,
+        StaticProvider::new_minimal(access_key, secret_key),
+        region,
+    ))
+}
+
 pub fn create_test_bucket() -> (S3Client, String) {
     let endpoint = env::var("S3_ENDPOINT").unwrap_or_else(|_| "http://localhost:9000".to_string());
+    println!("S3_ENDPOINT: {}", endpoint);
     let client = new_s3client_with_credentials(
         Region::Custom {
             name: "eu-west-1".to_owned(),
             endpoint,
         },
-        "ANTN35UAENTS5UIAEATD".to_owned(),
-        "TtnuieannGt2rGuie2t8Tt7urarg5nauedRndrur".to_owned(),
+        "admin".to_owned(),
+        "password".to_owned(),
     )
     .unwrap();
-    let bucket: String = rand::thread_rng()
-        .sample_iter(&Alphanumeric)
-        .take(63)
-        .collect();
-    let bucket = bucket.to_lowercase();
 
+    let bucket_name = srand::ThreadLocal::uint64().to_string();
+
+    println!("bucket: {}", bucket_name);
     client
         .create_bucket(CreateBucketRequest {
-            bucket: bucket.clone(),
+            bucket: bucket_name.clone(),
             ..Default::default()
         })
         .sync()
         .unwrap();
 
-    (client, bucket)
+    (client, bucket_name)
 }
 
 pub fn put_object(client: &S3Client, bucket: &str, key: &str, data: Vec<u8>) {
@@ -86,5 +101,6 @@ impl Read for ReaderWithError {
 }
 
 fn main() {
+    let (client, _) = create_test_bucket();
     println!("Hello, world!");
 }
