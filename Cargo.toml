@@ -28,4 +28,5 @@ members = [
     "deref",
     "rose-tree",
     "s3",
+    "map-result",
 ]
