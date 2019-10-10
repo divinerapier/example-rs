@@ -13,5 +13,4 @@ fn main() {
     let b = buf.take();
     assert_eq!(b, b"goodbye world"[..]);
     assert_eq!(buf.capacity(), 998);
-
 }

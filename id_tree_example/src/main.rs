@@ -34,6 +34,14 @@ fn foo() {
     for child in children {
         println!("{:?}, ", child);
     }
+    // test peekable
+    println!("test peekable");
+    let children = tree.children(&child_id).unwrap();
+    let mut children = children.peekable();
+    println!("peekable: {:?}", children.peek());
+    for child in children.skip(1) {
+        println!("range peekable. {:?}", child);
+    }
 }
 
 fn bar() {

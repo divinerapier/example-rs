@@ -30,4 +30,6 @@ members = [
     "s3",
     "map-result",
     "id_tree_example",
+    "concurrency",
+    "memory-layout"
 ]

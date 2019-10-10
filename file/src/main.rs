@@ -32,7 +32,6 @@ fn bench_seek() {
     use std::io::Seek;
 
     let args = std::env::args().collect::<Vec<String>>();
-     ;
     let count = if args.len() > 1 {
         args[1].parse::<i32>().unwrap()
     } else {
