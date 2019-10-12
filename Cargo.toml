@@ -31,5 +31,6 @@ members = [
     "map-result",
     "id_tree_example",
     "concurrency",
-    "memory-layout"
+    "memory-layout",
+    "tokio"
 ]
