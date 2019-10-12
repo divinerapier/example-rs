@@ -32,5 +32,6 @@ members = [
     "id_tree_example",
     "concurrency",
     "memory-layout",
-    "tokio"
+    "tokio",
+    "mutex"
 ]
