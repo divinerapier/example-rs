@@ -34,5 +34,6 @@ members = [
     "memory-layout",
     "tokio",
     "mutex",
-    "drop-example"
+    "drop-example",
+    "hyper-example"
 ]
