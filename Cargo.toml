@@ -35,5 +35,6 @@ members = [
     "tokio",
     "mutex",
     "drop-example",
-    "hyper-example"
+    "hyper-example",
+    "async-await"
 ]
