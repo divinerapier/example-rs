@@ -36,5 +36,6 @@ members = [
     "mutex",
     "drop-example",
     "hyper-example",
-    "async-await"
+    "async-await",
+    "rand-example",
 ]
