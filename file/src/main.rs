@@ -7,7 +7,8 @@ fn main() {
     // write_everywhere()
     // list_dir("/Users/fangsihao/Documents/code");
     // iter();
-    truncate();
+    // truncate();
+    get_filename();
 }
 
 fn f0() {
@@ -111,4 +112,19 @@ fn truncate() {
     file.sync_all();
     file.seek(std::io::SeekFrom::Start(64 * 1024)).unwrap();
     file.write_all("hello world!".as_bytes()).unwrap();
+}
+
+fn get_filename() {
+    // for entry in walkdir::WalkDir::new("./") {
+    //     let error_message = format!("invalid entry: {:?}", entry);
+    //     let entry: walkdir::DirEntry = entry.expect(&error_message);
+
+    // }
+    let dir = std::fs::read_dir("./");
+    let dir = dir.unwrap();
+    for entry in dir {
+        let entry: std::fs::DirEntry = entry.unwrap();
+        println!("{:?}", entry);
+        println!("file name: {:?}", entry.file_name());
+    }
 }
