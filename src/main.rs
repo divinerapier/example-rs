@@ -1,35 +1,33 @@
-struct A {
-    list: Vec<B>,
-    map: std::collections::HashMap<String, usize>,
-}
-
-struct B {
-    key: String,
-    value: i32,
-}
-
-impl A {
-    pub fn new() -> A {
-        A {
-            list: vec![],
-            map: std::collections::HashMap::new(),
-        }
-    }
-    pub fn add(mut self, b: B) -> Self {
-        let key = b.key.clone();
-        self.list.push(b);
-        self.map.insert(key, self.list.len() - 1);
-        self
-    }
-}
-
 fn main() {
-    use log::debug;
-    use log::error;
-    use log::info;
-    use log::trace;
-    error!("hello world");
-    info!("hello world");
-    debug!("hello world");
-    trace!("hello world");
+    // let mut cnt1 = 0;
+    // let mut cnt2 = 0;
+    // for i in (0..10000) {
+    //     let a = 8 - i % 8;
+    //     let b = 8 - (i & 7); // 优先级低
+    //     let c = (8 ^ (i & 8)) as i32;
+    //     // println!("{} % 8 = {}, {} & 7 = {}", i, a, i, b);
+    //     if a == b {
+    //         cnt1 += 1;
+    //     }
+    //     if a == c {
+    //         cnt2 += 1;
+    //     }
+    // }
+    // println!("{:?}, {:?}", cnt1, cnt2);
+    // for i in 0..8 {
+    //     for j in 0..8 {
+    //         println!("{:03b} ^ {:03b} = {:03b}", i, j, i ^ j);
+    //     }
+    // }
+
+    for i in 0..256 {
+        println!("{:3?} -> {:3?}", i, pad(i));
+    }
+}
+
+fn pad(i: u32) -> u32 {
+    match i & 7 {
+        0 => i,
+        d @ _ => i + 8 - d,
+    }
 }
