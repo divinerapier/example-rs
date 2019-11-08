@@ -1,13 +1,14 @@
 use std::io::Seek;
 use std::io::Write;
-
+ use std::io::Read;
 fn main() {
     // f0()
     // bench_seek()
     // write_everywhere()
     // list_dir("/Users/fangsihao/Documents/code");
     // iter();
-    truncate();
+    // truncate();
+    read_file();
 }
 
 fn f0() {
@@ -111,4 +112,18 @@ fn truncate() {
     file.sync_all();
     file.seek(std::io::SeekFrom::Start(64 * 1024)).unwrap();
     file.write_all("hello world!".as_bytes()).unwrap();
+}
+
+fn read_file() {
+    let path = std::path::PathBuf::from("./Cargo.toml");
+    let mut buffer = Vec::with_capacity(10);
+       let mut file = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .write(true)
+        .read(true)
+        .open(path)
+        .unwrap();
+    file.read_exact(&mut buffer);
+    println!("{:?}", buffer);
 }

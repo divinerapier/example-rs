@@ -1,5 +1,5 @@
 [package]
-name = "hyper-example"
+name = "future-example"
 version = "0.1.0"
 authors = ["divinerapier <poriter.coco@gmail.com>"]
 edition = "2018"
@@ -9,8 +9,6 @@ edition = "2018"
 [dependencies]
 log = "0.4.8"
 env_logger = "0.7.0"
-hyper = { version = "0.13.0-alpha.4", features = ["unstable-stream"]}
-url = "2.1.0"
 bytes = "0.4.6"
 futures-preview = { version = "=0.3.0-alpha.19", features = ["async-await"] }
 futures-core-preview = "=0.3.0-alpha.19"
@@ -18,5 +16,6 @@ futures-channel-preview = "=0.3.0-alpha.19"
 futures-util-preview = "=0.3.0-alpha.19"
 tokio-executor = "=0.2.0-alpha.6"
 tokio-io = "=0.2.0-alpha.6"
-serde = { version = "1.0.101", features = ["derive"]}
-serde_json = "1.0.41"
+hyper = { version = "0.13.0-alpha.4", features = ["unstable-stream"]}
+url = "2.1.0"
+tokio = "=0.2.0-alpha.6"
