@@ -1,6 +1,6 @@
+use std::io::Read;
 use std::io::Seek;
 use std::io::Write;
- use std::io::Read;
 fn main() {
     // f0()
     // bench_seek()
@@ -8,7 +8,8 @@ fn main() {
     // list_dir("/Users/fangsihao/Documents/code");
     // iter();
     // truncate();
-    read_file();
+    // read_file();
+    // get_filename();
 }
 
 fn f0() {
@@ -117,7 +118,7 @@ fn truncate() {
 fn read_file() {
     let path = std::path::PathBuf::from("./Cargo.toml");
     let mut buffer = Vec::with_capacity(10);
-       let mut file = std::fs::OpenOptions::new()
+    let mut file = std::fs::OpenOptions::new()
         .create(true)
         .append(true)
         .write(true)
@@ -126,4 +127,18 @@ fn read_file() {
         .unwrap();
     file.read_exact(&mut buffer);
     println!("{:?}", buffer);
+}
+fn get_filename() {
+    // for entry in walkdir::WalkDir::new("./") {
+    //     let error_message = format!("invalid entry: {:?}", entry);
+    //     let entry: walkdir::DirEntry = entry.expect(&error_message);
+
+    // }
+    let dir = std::fs::read_dir("./");
+    let dir = dir.unwrap();
+    for entry in dir {
+        let entry: std::fs::DirEntry = entry.unwrap();
+        println!("{:?}", entry);
+        println!("file name: {:?}", entry.file_name());
+    }
 }

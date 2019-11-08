@@ -35,5 +35,7 @@ members = [
     "drop-example",
     "hyper-example",
     "async-await-example",
-    "future-examples"
+    "future-examples",
+    "async-await",
+    "rand-example",
 ]
