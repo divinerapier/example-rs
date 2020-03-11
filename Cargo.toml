@@ -36,6 +36,6 @@ members = [
     "hyper-example",
     "async-await-example",
     "future-examples",
-    "async-await",
     "rand-example",
+    "cachefs",
 ]
